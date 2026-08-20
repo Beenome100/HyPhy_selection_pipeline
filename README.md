@@ -25,7 +25,7 @@ pipemake msf-codon-selection \
     --scale-threads 6 \
     --scale-mem 6
 ```
-For `--msf-wildcard` change the sequence file extension to match your files.
+For `--msf-wildcard` change the path and sequence file extension to match your files.
 
 
 ## 3. Update the slurm script
