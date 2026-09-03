@@ -6,29 +6,51 @@ Note: Run the pipeline on Atlas. The pipeline encounters errors on Ceres.
 
 ## 1. Load the conda environment
 
-If you can access the Beenome shared conda environment directory:
+On Atlas you should be able to access the Beenome shared conda environment directory:
 ```
-conda activate /project/beenome100_collab/conda_envs/hyphy
-```
-
-Otherwise, create the conda environment from the environment YAML file. The environment name is "hyphy_pipemake_env".
-```
-conda env create --file hyphy_pipemake_env.yml
-conda activate hyphy_pipemake_env
+conda activate /project/beenome100_collab/conda_envs/hyphy_beenome_env
 ```
 
-## 2. Run pipemake
+Otherwise, create the conda environment from the environment YAML file.
 ```
-pipemake msf-codon-selection \
-    --msf-wildcard /path/to/orthogroup/sequence/files/{samples}.cds.fna \   
-    --workflow-dir <output_folder_name> \
+conda env create --file hyphy_beenome_env.yml
+conda activate hyphy_beenome_env
+```
+
+The conda environment has pipemake, snakemake, and the snakemake slurm executor. To only install pipemake:
+```
+conda install -c bioconda kocherlab::pipemake=1.4.9
+```
+
+## 2. Fasta batch file
+The ~8500 orthogroup files are split into smaller batches for processing. 
+
+On Atlas the batch files are located at `/project/beenome100_collab/hyphy_orthogroups` 
+
+For folks not working on Atlas, the files can be downloaded (see email for link).
+
+To keep track of who is running what, record which batch you are processing in the Google Doc (see email for link).
+
+## 3. Run pipemake
+```
+pipemake msf-codon-selection --msf-wildcard /project/beenome100_collab/hyphy_orthogroups/random0_split_00/{samples}_random0.cds.fa \
+    --busted-labels Bees \
+    --outgroup-file /project/beenome100_collab/conda_envs/hyphy_files/outgroup_species.txt \
+    --species-tree /project/beenome100_collab/conda_envs/hyphy_files/labeled_species_tree.tre \
+    --workflow-dir Selection_random0_split_00 \
+    --singularity-dir /project/beenome100_collab/conda_envs/hyphy_singularity \
     --scale-threads 6 \
     --scale-mem 6
 ```
-For `--msf-wildcard` change the path and sequence file extension to match your files.
 
+For each batch of fasta files you will need to update: 
+- `--msf-wildcard`
+    - Update the path to the batch file you are processing
+    - Based on the batch file, update the number in `{samples}_random0.cds.fa` (random0, random1, or random2)
+- `--workflow-dir`
+    - Update with the name of the batch file you are processing
 
-## 3. Update the slurm script
+## 4. Update the slurm script
 Pipemake will print some text, including:
 ```
 please use the following command within the test directory:
@@ -52,8 +74,7 @@ Update `'--bind /path/to/orthogroup/sequence/files'` in the slurm script.
 
 module load apptainer
 module load miniconda3
-source activate
-conda activate hyphy_pipemake_env
+source activate /project/beenome100_collab/conda_envs/hyphy_beenome_env
 
 snakemake --executor slurm --jobs 100 \
     --latency-wait 60 \
