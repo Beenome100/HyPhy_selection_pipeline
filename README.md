@@ -111,7 +111,7 @@ On Atlas it takes about four days for most of the orthogroups to process. At thi
 
 At this point, it's best to kill Snakemake and the remaining jobs, then restart with increased memory to help the alignment step along.
 
-1. Hard kill the actively running jobs.  Killing the main Snakemake job alone is not sufficient--each submitted job needs to be canceled. Note that `scancel --user <user name>` will kill all running jobs, not just the ones pertaining to Snakemake.
+1. Hard kill the actively running jobs.  Killing the main Snakemake job alone is not sufficient--each submitted job needs to be canceled. Note that `scancel --user <user name>` will kill all user jobs, not just the ones pertaining to Snakemake.
 
 2. Increase the memory allocated to alignment. Open the `config.yml` file and find where it says `msf_align_macse`. Double `mem_mb` to 288000. Afterwards the config file should look like this:
 ```
