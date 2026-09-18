@@ -59,7 +59,7 @@ For each orthogroup batch you will need to update:
 - `--workflow-dir`
     - Update with the name of the batch you are processing
 
-## 2.4 Update the job script
+### 2.4 Update the job script
 Pipemake will print some text, including:
 ```
 msf-codon-selection version 1.0 has been configured, please use the following command within the <workflow-dir> directory:
@@ -108,7 +108,9 @@ See the SLURM output file for progress updates.
 Note: The SLURM output will include `Error in rule label_tree_busted` messages. Ignore these (we're actively working on it).
 
 ### 3.1 Restarting with more memory
-On Atlas it takes about four days for most of the orthogroups to process. At this point what typically remains are alignment jobs that are taking a long time to process. Also, Snakemake tends to get stuck where only a few jobs are running and it stops submitting new ones, even though the SLURM output shows steps remaining (e.g., 7401 of 7633 steps (97%) done).
+On Atlas it takes about four days for most of the orthogroups to process. At this point what typically remains are alignment jobs that are taking a long time to process. Also, Snakemake tends to get stuck where only a few jobs are running and it stops submitting new ones, even though the SLURM log shows steps remaining (e.g., 7401 of 7633 steps (97%) done).
+
+After ~4 days, take a look at your job queue. Are there (1) A handful of jobs remaining and (2) remaining steps (see SLURM log)?
 
 At this point, it's best to kill Snakemake and the remaining jobs, then restart with increased memory to help the alignment step along.
 
@@ -121,6 +123,8 @@ msf_align_macse:
     threads: 6
 ```
 3. Resubmit the Snakemake job. See section 3.2.
+
+Feel free to ask me to take a look at your queue and I can help determine whether it's best to kill and resubmit.
 
 ### 3.2 Restarting a hard killed Snakemake job
 When restarting a killed Snakemake job (1) Execute `snakemake --unlock` first so that the resubmitted job can write to the same directory as before. (2) Add `--rerun-incomplete` to the Snakemake command.
